@@ -11,24 +11,53 @@ struct Node
 	Node *next;
 };
 
-void addNode()
+Node * addNode(Node *p, short int index, short int data)
+{
+	p = new Node();
+	p->nodeIndex = index;
+	p->data = data;
+	return p;
+}
+
+void removeNode()
 {
 
 }
 
-void deleteNode()
+Node * addList(Node *ptr, short int data)
+{
+	ptr = addNode(ptr, 1, data);
+	return ptr;
+}
+
+void removeList()
 {
 
 }
 
-void addList()
+void displayList(Node *ptr)
 {
-
-}
-
-void deleteList()
-{
-
+	if (ptr == NULL)
+		cout << "List is empty" << "\n\n\n\n";
+	else
+	{
+		Node *p = ptr;
+		cout << "List:" << '\n' << "Index:  ";
+		while (p->next != NULL)
+		{
+			cout << p->nodeIndex << '\t';
+			p = p->next;
+		}
+		cout << p->nodeIndex << '\t';
+		p = ptr;
+		cout << endl << "Data:   ";
+		while (p->next != NULL)
+		{
+			cout << p->data << '\t';
+			p = p->next;
+		}
+		cout << p->data << '\t' << "\n\n";
+	}
 }
 
 short int menu(short int num1, short int num2, short int arrow)
@@ -39,87 +68,54 @@ short int menu(short int num1, short int num2, short int arrow)
 			if (arrow > 49)
 				num1 = --arrow;
 			else
-				num1 = 52; //num1 = arrow;
+				num1 = 52;
 		else if (num2 == 80)
 			if (arrow < 52)
 				num1 = ++arrow;
 			else
-				num1 = 49; //num1 = arrow;
+				num1 = 49;
 		else
 			num1 = arrow;
 	}
 
-	cout << '\n' << "Add node    ";
+	cout << '\n' << "Add element    ";
 	if (num1 == 49)
 		cout << "<--";
-	cout << '\n' << "Delete node ";
+	cout << '\n' << "Delete element ";
 	if (num1 == 50)
 		cout << "<--";
-	cout << '\n' << "Add list    ";
+	cout << '\n' << "Add list       ";
 	if (num1 == 51)
 		cout << "<--";
-	cout << '\n' << "Delete list ";
+	cout << '\n' << "Delete list    ";
 	if (num1 == 52)
 		cout << "<--";
-	cout << '\n' << '\n' << "Press Esc to exit";
+	cout << "\n\n" << "Press Esc to exit";
 	return num1;
 }
 
 int main()
 {
 	short int choose = 0, tempChoose = 0, arrowControl = 49;
-	short int nodeCounter = 1;
+	short int position = 0, newData = 0;
+	bool wrongNumber = false;
 
-	Node *p;
-	Node Head;
-	Head.nodeIndex = 1;
-	Head.data = pow(Head.nodeIndex, 2);
-	Head.next = NULL;
-	p = &Head;
-	cout << "Index:  ";
-	for (int i = 0; i < nodeCounter; i++)
-	{
-		cout << p->nodeIndex << '\t';
-		p = p->next;
-	}
-	cout << endl << "Data:   ";
-	p = &Head;
-	for (int i = 0; i < nodeCounter; i++)
-	{
-		cout << p->data << '\t';
-		p = p->next;
-	}
-	cout << endl << endl;
-	p = &Head;
-
-	//-----------------------------DELETE IT-----------------------------
-	Node a, b, c, d;
-	Head.next = &a;
-	nodeCounter = 5;
-	a.nodeIndex = 2;
-	a.data = pow(a.nodeIndex, 2);
-	a.next = &b;
-	b.nodeIndex = 3;
-	b.data = pow(b.nodeIndex, 2);
-	b.next = &c;
-	c.nodeIndex = 4;
-	c.data = pow(c.nodeIndex, 2);
-	c.next = &d;
-	d.nodeIndex = 5;
-	d.data = pow(d.nodeIndex, 2);
-	d.next = NULL;
-	//-------------------------------------------------------------------
+	Node *head, *tmp, *p;
+	head = NULL;
+	tmp = NULL;
 
 
-	cout << '\n' << "Add node    ";
-	cout << "<--";
-	cout << '\n' << "Delete node ";
+	displayList(head);
+
+	cout << '\n' << "Add element    <--";
+	cout << '\n' << "Delete element ";
 	cout << '\n' << "Add list    ";
 	cout << '\n' << "Delete list ";
-	cout << '\n' << '\n' << "Press Esc to exit";
+	cout << "\n\n" << "Press Esc to exit";
 
 	while (choose != 27)
 	{
+		p = head;
 		do
 		{
 			choose = _getch();
@@ -131,147 +127,168 @@ int main()
 		if (choose == 13)
 		{
 			system("cls");
-
-			
-
 			switch (arrowControl)
 			{
 			case 49:
-				//clockwiseToTheCenter(M, N, matrix);
+				if (head == NULL)
+				{
+					cout << "There is no list to add new element" << endl;
+					break;
+				}
+				cout << "Number of new element: ";
+				cin >> position;
+				cout << "Value of new element: ";
+				cin >> newData;
+				if (position == 1)
+				{
+					tmp = head;
+					head = new Node();
+					head->nodeIndex = 1;
+					head->data = newData;
+					head->next = tmp;
+					if (tmp != NULL)
+					{
+						short int i = 0;
+						while (tmp != NULL)
+						{
+							tmp->nodeIndex = position + 1 + i++;
+							tmp = tmp->next;
+						}
+					}
+					break;
+				}
+				if (position < 1)
+				{
+					cout << "\nError: wrong number" << endl;
+					break;
+				}
+				while (p->nodeIndex <= position - 2)
+				{
+					if (p->next == NULL)
+					{
+						cout << "\nError: wrong number" << endl;
+						wrongNumber = true;
+						break;
+					}
+					p = p->next;
+				}
+				if (wrongNumber)
+				{
+					wrongNumber = false;
+					break;
+				}
+				tmp = p->next;
+				p->next = addNode(p, position, newData);
+				p = p->next;
+				p->next = tmp;
+				if (tmp != NULL)
+				{
+					short int i = 0;
+					while (tmp != NULL)
+					{
+						tmp->nodeIndex = position + 1 + i++;
+						tmp = tmp->next;
+					}
+				}
+				position = 0;
+				newData = 0;
 				break;
 			case 50:
-				//counterclockwiseToTheCenter(M, N, matrix);
+				if (head != NULL)
+				{
+					cout << "Number of element to remove it: ";
+					cin >> position;
+					if (position < 1)
+					{
+						cout << "\nError: wrong number" << endl;
+						break;
+					}
+					if (position == 1)
+					{
+						tmp = head->next;
+						delete(head);
+						head = tmp;
+						if (tmp != NULL)
+						{
+							short int i = 0;
+							while (tmp != NULL)
+							{
+								tmp->nodeIndex = position + i++;
+								tmp = tmp->next;
+							}
+						}
+						break;
+					}
+					while (p->nodeIndex <= position - 2)
+					{
+						if (p->next == NULL)
+						{
+							cout << "\nError: wrong number" << endl;
+							wrongNumber = true;
+							break;
+						}
+						p = p->next;
+					}
+					if (wrongNumber)
+					{
+						wrongNumber = false;
+						break;
+					}
+					tmp = p->next->next;
+					delete(p->next);
+					p->next = tmp;
+					if (tmp != NULL)
+					{
+						short int i = 0;
+						while (tmp != NULL)
+						{
+							tmp->nodeIndex = position + i++;
+							tmp = tmp->next;
+						}
+					}
+					position = 0;
+				}
 				break;
 			case 51:
-				//clockwiseFromTheCenter(M, N, matrix);
+				if (head == NULL)
+				{
+					cout << "Value of first element: ";
+					cin >> newData;
+					head = addList(head, newData);
+					head->next = NULL;
+				}
+				else
+					cout << "List already exist" << "\n\n";
 				break;
 			case 52:
-				//counterclockwiseFromTheCenter(M, N, matrix);
-			default:;
+				if (head != NULL)
+				{
+					while (head->next != NULL)
+					{
+						tmp = p = head;
+						while (p->next != NULL)
+						{
+							tmp = p;
+							p = p->next;
+						}
+						if (p->nodeIndex != 1)
+							delete(p);
+						tmp->next = NULL;
+					}
+					delete(head);
+					head = NULL;
+				}
+				else
+					cout << "There is no list to delete it" << "\n\n";
 			}
-			/*for (int i = 0; i < N; i++)
-			{
-				for (int j = 0; j < M; j++)
-					printf("%5d", matrix[i][j]);
-				cout << '\n' << '\n';
-			}*/
 			cout << "Press any key";
 			_getch();
 			choose = arrowControl;
 		}
 		system("cls");
-		cout << "Index:  ";
-			for (int i = 0; i < nodeCounter; i++)
-			{
-				cout << p->nodeIndex << '\t';
-				p = p->next;
-			}
-		cout << endl << "Data:   ";
-		p = &Head;
-		for (int i = 0; i < nodeCounter; i++)
-		{
-			cout << p->data << '\t';
-			p = p->next;
-		}
-		cout << endl << endl;
-		p = &Head;
+		displayList(head);
 		arrowControl = menu(choose, tempChoose, arrowControl);
 	}
-
+	
 	return 0;
 }
-
-/*
-#include "stdafx.h"
-#include <iostream>
-using namespace std;
-struct DoubleList //описание узла списка
-{
-int data; //информационное поле
-DoubleList *next; //указатель на следующий элемент
-DoubleList *prev; //указатель на предыдущий элемент
-};
-DoubleList *head; //указатель на первый элемент списка
-//**********************ДОБАВЛЕНИЕ ЭЛЕМЕНТА**********************
-void AddList(int value, int position)
-{
-DoubleList *node=new DoubleList; //создание нового элемента
-node->data=value; //присвоение элементу значения
-if (head==NULL) //если список пуст
-{
-node->next=node; //установка указателя next
-node->prev=node; //установка указателя prev
-head=node; //определяется голова списка
-}
-else
-{
-DoubleList *p=head;
-for(int i=position; i>1; i--) p=p->next;
-p->prev->next=node;
-node->prev=p->prev;
-node->next=p;
-p->prev=node;
-}
-cout<<"\nЭлемент добавлен...\n\n";
-}
-//***********************УДАЛЕНИЕ ЭЛЕМЕНТА***********************
-int DeleteList(int position)
-{
-if (head==NULL) { cout<<"\nСписок пуст\n\n"; return 0; }
-if (head==head->next)
-{
-delete head;
-head=NULL;
-}
-else
-{
-DoubleList *a=head;
-for (int i=position; i>1; i--) a=a->next;
-if (a==head) head=a->next;
-a->prev->next=a->next;
-a->next->prev=a->prev;
-delete a;
-}
-cout<<"\nЭлемент удален...\n\n";
-}
-//*************************ВЫВОД СПИСКА*************************
-void PrintList()
-{
-if (head==NULL) cout<<"\nСписок пуст\n\n";
-else
-{
-DoubleList *a=head;
-cout<<"\nЭлементы списка: ";
-do
-{
-cout<<a->data<<" ";
-a=a->next;
-} while(a!=head); cout<<"\n\n";
-}
-}
-//************************ГЛАВНАЯ ФУНКЦИЯ************************
-void main()
-{
-setlocale(LC_ALL, "Rus");
-int value, position, x;
-do
-{
-cout<<"1. Добавить элемент"<<endl;
-cout<<"2. Удалить элемент"<<endl;
-cout<<"3. Вывести список"<<endl;
-cout<<"0. Выйти"<<endl;
-cout<<"\nНомер операции > "; cin>>x;
-switch (x)
-{
-case 1:
-cout<<"Значение > "; cin>>value;
-cout<<"Позиция > "; cin>>position;
-AddList(value, position); break;
-case 2:
-cout<<"Позиция > "; cin>>position;
-DeleteList(position); break;
-case 3: PrintList(); break;
-}
-} while (x!=0);
-}
-*/
