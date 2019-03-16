@@ -4,6 +4,26 @@
 
 using namespace std;
 
+const short SPEC_KEY = 224;
+const short UP_ARROW_KEY = 72;
+const short DOWN_ARROW_KEY = 80;
+const short LEFT_ARROW_KEY = 75;
+const short RIGHT_ARROW_KEY = 77;
+const short ENTER_KEY = 13;
+const short ESC_KEY = 27;
+const short SPACE_KEY = 32;
+const short BACKSPACE_KEY = 8;
+const short NUM_0_KEY = 48;
+const short NUM_1_KEY = 49;
+const short NUM_2_KEY = 50;
+const short NUM_3_KEY = 51;
+const short NUM_4_KEY = 52;
+const short NUM_5_KEY = 53;
+const short NUM_6_KEY = 54;
+const short NUM_7_KEY = 55;
+const short NUM_8_KEY = 56;
+const short NUM_9_KEY = 57;
+
 struct Node
 {
 	short int nodeIndex;
@@ -11,17 +31,138 @@ struct Node
 	Node *next;
 };
 
-Node * addNode(Node *p, short int index, short int data)
+Node * addNode(Node *ptr, short int index, short int data)
 {
-	p = new Node();
-	p->nodeIndex = index;
-	p->data = data;
-	return p;
+	ptr = new Node();
+	ptr->nodeIndex = index;
+	ptr->data = data;
+	return ptr;
 }
 
-void removeNode()
+Node * addElement(Node *ptr)
 {
+	Node *tmp, *p;
+	short int position = 0, newData = 0;
 
+	p = ptr;
+	cout << "Number of new element: ";
+	cin >> position;
+	cout << "Value of new element: ";
+	cin >> newData;
+	if (position == 1)
+	{
+		tmp = ptr;
+		ptr = new Node();
+		ptr->nodeIndex = 1;
+		ptr->data = newData;
+		ptr->next = tmp;
+		if (tmp != NULL)
+		{
+			short int i = 0;
+			while (tmp != NULL)
+			{
+				tmp->nodeIndex = position + 1 + i++;
+				tmp = tmp->next;
+			}
+		}
+		return ptr;
+	}
+	if (position < 1)
+	{
+		cout << "\nError: wrong number" << endl;
+		return ptr;
+	}
+	while (p->nodeIndex <= position - 2)
+	{
+		if (p->next == NULL)
+		{
+			cout << "\nError: wrong number" << endl;
+			return ptr;
+		}
+		p = p->next;
+	}
+	tmp = p->next;
+	p->next = addNode(p, position, newData);
+	p = p->next;
+	p->next = tmp;
+	if (tmp != NULL)
+	{
+		short int i = 0;
+		while (tmp != NULL)
+		{
+			tmp->nodeIndex = position + 1 + i++;
+			tmp = tmp->next;
+		}
+	}
+	position = 0;
+	newData = 0;
+	return ptr;
+}
+
+Node * removeNode(Node *ptr)
+{
+	Node *tmp, *p;
+	short int position = 0;
+	bool wrongNumber = false;
+
+	p = ptr;
+	cout << "Number of element to remove it: ";
+	cin >> position;
+	if (position < 1)
+	{
+		cout << "\nError: wrong number" << endl;
+		return ptr;
+	}
+	if (position == 1)
+	{
+		tmp = ptr->next;
+		delete(ptr);
+		ptr = tmp;
+		if (tmp != NULL)
+		{
+			short int i = 0;
+			while (tmp != NULL)
+			{
+				tmp->nodeIndex = position + i++;
+				tmp = tmp->next;
+			}
+		}
+		return ptr;
+	}
+	while (p->nodeIndex <= position - 2)
+	{
+		if (p->next == NULL)
+		{
+			cout << "\nError: wrong number" << endl;
+			wrongNumber = true;
+			break;
+		}
+		p = p->next;
+	}
+	if (wrongNumber || (p->next == NULL))
+	{
+		if (!wrongNumber)
+			cout << "\nError: wrong number" << endl;
+		wrongNumber = false;
+		return ptr;
+	}
+	if (p->next != NULL)
+		tmp = p->next->next;
+	else
+		tmp = NULL;
+	delete(p->next);
+	p->next = tmp;
+	if (tmp != NULL)
+	{
+		short int i = 0;
+		while (tmp != NULL)
+		{
+			tmp->nodeIndex = position + i++;
+			tmp = tmp->next;
+		}
+	}
+	position = 0;
+	return ptr;
 }
 
 Node * addList(Node *ptr, short int data)
@@ -30,9 +171,23 @@ Node * addList(Node *ptr, short int data)
 	return ptr;
 }
 
-void removeList()
+Node * removeList(Node *ptr)
 {
-
+	Node *tmp, *p;
+	while (ptr->next != NULL)
+	{
+		tmp = p = ptr;
+		while (p->next != NULL)
+		{
+			tmp = p;
+			p = p->next;
+		}
+		if (p->nodeIndex != 1)
+			delete(p);
+		tmp->next = NULL;
+	}
+	delete(ptr);
+	return NULL;
 }
 
 void displayList(Node *ptr)
@@ -62,33 +217,33 @@ void displayList(Node *ptr)
 
 short int menu(short int num1, short int num2, short int arrow)
 {
-	if (num1 == 224)
+	if (num1 == SPEC_KEY)
 	{
-		if (num2 == 72)
-			if (arrow > 49)
+		if (num2 == UP_ARROW_KEY)
+			if (arrow > NUM_1_KEY)
 				num1 = --arrow;
 			else
-				num1 = 52;
-		else if (num2 == 80)
-			if (arrow < 52)
+				num1 = NUM_4_KEY;
+		else if (num2 == DOWN_ARROW_KEY)
+			if (arrow < NUM_4_KEY)
 				num1 = ++arrow;
 			else
-				num1 = 49;
+				num1 = NUM_1_KEY;
 		else
 			num1 = arrow;
 	}
 
 	cout << '\n' << "Add element    ";
-	if (num1 == 49)
+	if (num1 == NUM_1_KEY)
 		cout << "<--";
-	cout << '\n' << "Delete element ";
-	if (num1 == 50)
+	cout << '\n' << "Remove element ";
+	if (num1 == NUM_2_KEY)
 		cout << "<--";
 	cout << '\n' << "Add list       ";
-	if (num1 == 51)
+	if (num1 == NUM_3_KEY)
 		cout << "<--";
-	cout << '\n' << "Delete list    ";
-	if (num1 == 52)
+	cout << '\n' << "Remove list    ";
+	if (num1 == NUM_4_KEY)
 		cout << "<--";
 	cout << "\n\n" << "Press Esc to exit";
 	return num1;
@@ -96,160 +251,46 @@ short int menu(short int num1, short int num2, short int arrow)
 
 int main()
 {
-	short int choose = 0, tempChoose = 0, arrowControl = 49;
-	short int position = 0, newData = 0;
-	bool wrongNumber = false;
-
-	Node *head, *tmp, *p;
+	short int choose = 0, tempChoose = 0, arrowControl = NUM_1_KEY;
+	short int newData = 0;
+	Node *head;
 	head = NULL;
-	tmp = NULL;
-
 
 	displayList(head);
-
 	cout << '\n' << "Add element    <--";
-	cout << '\n' << "Delete element ";
-	cout << '\n' << "Add list    ";
-	cout << '\n' << "Delete list ";
+	cout << '\n' << "Remove element ";
+	cout << '\n' << "Add list       ";
+	cout << '\n' << "Remove list    ";
 	cout << "\n\n" << "Press Esc to exit";
 
-	while (choose != 27)
+	while (choose != ESC_KEY)
 	{
-		p = head;
 		do
 		{
 			choose = _getch();
-			if (choose == 224)
+			if (choose == SPEC_KEY)
 				tempChoose = _getch();
-		} while ((choose != 27) && (choose != 49) && (choose != 50) && (choose != 51)
-			&& (choose != 52) && (choose != 224) && (choose != 13));
+		} while ((choose != ESC_KEY) && (choose != NUM_1_KEY) && (choose != NUM_2_KEY) && (choose != NUM_3_KEY)
+			&& (choose != NUM_4_KEY) && (choose != SPEC_KEY) && (choose != ENTER_KEY));
 
-		if (choose == 13)
+		if (choose == ENTER_KEY)
 		{
 			system("cls");
 			switch (arrowControl)
 			{
-			case 49:
+			case NUM_1_KEY:
 				if (head == NULL)
 				{
 					cout << "There is no list to add new element" << endl;
 					break;
 				}
-				cout << "Number of new element: ";
-				cin >> position;
-				cout << "Value of new element: ";
-				cin >> newData;
-				if (position == 1)
-				{
-					tmp = head;
-					head = new Node();
-					head->nodeIndex = 1;
-					head->data = newData;
-					head->next = tmp;
-					if (tmp != NULL)
-					{
-						short int i = 0;
-						while (tmp != NULL)
-						{
-							tmp->nodeIndex = position + 1 + i++;
-							tmp = tmp->next;
-						}
-					}
-					break;
-				}
-				if (position < 1)
-				{
-					cout << "\nError: wrong number" << endl;
-					break;
-				}
-				while (p->nodeIndex <= position - 2)
-				{
-					if (p->next == NULL)
-					{
-						cout << "\nError: wrong number" << endl;
-						wrongNumber = true;
-						break;
-					}
-					p = p->next;
-				}
-				if (wrongNumber)
-				{
-					wrongNumber = false;
-					break;
-				}
-				tmp = p->next;
-				p->next = addNode(p, position, newData);
-				p = p->next;
-				p->next = tmp;
-				if (tmp != NULL)
-				{
-					short int i = 0;
-					while (tmp != NULL)
-					{
-						tmp->nodeIndex = position + 1 + i++;
-						tmp = tmp->next;
-					}
-				}
-				position = 0;
-				newData = 0;
+				head = addElement(head);
 				break;
-			case 50:
+			case NUM_2_KEY:
 				if (head != NULL)
-				{
-					cout << "Number of element to remove it: ";
-					cin >> position;
-					if (position < 1)
-					{
-						cout << "\nError: wrong number" << endl;
-						break;
-					}
-					if (position == 1)
-					{
-						tmp = head->next;
-						delete(head);
-						head = tmp;
-						if (tmp != NULL)
-						{
-							short int i = 0;
-							while (tmp != NULL)
-							{
-								tmp->nodeIndex = position + i++;
-								tmp = tmp->next;
-							}
-						}
-						break;
-					}
-					while (p->nodeIndex <= position - 2)
-					{
-						if (p->next == NULL)
-						{
-							cout << "\nError: wrong number" << endl;
-							wrongNumber = true;
-							break;
-						}
-						p = p->next;
-					}
-					if (wrongNumber)
-					{
-						wrongNumber = false;
-						break;
-					}
-					tmp = p->next->next;
-					delete(p->next);
-					p->next = tmp;
-					if (tmp != NULL)
-					{
-						short int i = 0;
-						while (tmp != NULL)
-						{
-							tmp->nodeIndex = position + i++;
-							tmp = tmp->next;
-						}
-					}
-					position = 0;
-				}
+					head = removeNode(head);
 				break;
-			case 51:
+			case NUM_3_KEY:
 				if (head == NULL)
 				{
 					cout << "Value of first element: ";
@@ -258,28 +299,13 @@ int main()
 					head->next = NULL;
 				}
 				else
-					cout << "List already exist" << "\n\n";
+					cout << "List already exists" << "\n\n";
 				break;
-			case 52:
+			case NUM_4_KEY:
 				if (head != NULL)
-				{
-					while (head->next != NULL)
-					{
-						tmp = p = head;
-						while (p->next != NULL)
-						{
-							tmp = p;
-							p = p->next;
-						}
-						if (p->nodeIndex != 1)
-							delete(p);
-						tmp->next = NULL;
-					}
-					delete(head);
-					head = NULL;
-				}
+					head = removeList(head);
 				else
-					cout << "There is no list to delete it" << "\n\n";
+					cout << "There is no list to remove it" << "\n\n";
 			}
 			cout << "Press any key";
 			_getch();
